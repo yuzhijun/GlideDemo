@@ -1,17 +1,20 @@
 package lenovo.medical.com.glidedemo;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-
-import java.io.File;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -51,12 +54,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn2:
                 //从资源中加载图片
-                Glide.with(this)
-                        .load(R.mipmap.ic_launcher)
-                        .override(50,50)//在图片显示到 ImageView之前重新改变图片大小
-                        .fitCenter()//fitCenter() 是裁剪技术，即缩放图像让图像都测量出来等于或小于 ImageView 的边界范围。该图像将会完全显示，但可能不会填满整个 ImageView
-                        .into(ivShow);
-
+//                Glide.with(this)
+//                        .load(R.mipmap.ic_launcher)
+//                        .override(50,50)//在图片显示到 ImageView之前重新改变图片大小
+//                        .fitCenter()//fitCenter() 是裁剪技术，即缩放图像让图像都测量出来等于或小于 ImageView 的边界范围。该图像将会完全显示，但可能不会填满整个 ImageView
+//                        .into(ivShow);
                 //缓存策略
 //                String internetUrl1 = "http://i.imgur.com/DvpvklR.png";
 //                Glide.with(this)
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        .crossFade() // 淡入淡出动画(禁止动画dontAnimate)
 //                        .diskCacheStrategy(DiskCacheStrategy.NONE)
 //                        .skipMemoryCache(true)
+//                        .listener(requestListener)
 //                        .into(ivShow);
                 //优先级
 //                String internetUrl2 = "http://i.imgur.com/DvpvklR.png";
@@ -76,6 +79,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        .crossFade() // 淡入淡出动画(禁止动画dontAnimate)
 //                        .priority(Priority.LOW) //优先级
 //                        .into(ivShow);
+                //缩略图
+//                String url1 = "http://i.imgur.com/DvpvklR.png";
+//                Glide.with(this)
+//                        .load(url1)
+//                        .thumbnail(0.1f)
+//                        .into(ivShow);
+                //用不同的请求进阶缩略图
+//                DrawableRequestBuilder<String> thumbnailRequest = Glide
+//                        .with(this)
+//                        .load("http://i.imgur.com/rFLNqWI.jpg");
+//
+//                Glide.with(this)
+//                        .load(url1)
+//                        .thumbnail( thumbnailRequest )
+//                        .into(ivShow);
+
+                //simpletarget的使用
+                loadImageViewTarget();
                 break;
             case R.id.btn3:
                 //从uri中加载图片
@@ -88,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String url = "http://i.kinja-img.com/gawker-media/image/upload/s--B7tUiM5l--/gf2r69yorbdesguga10i.gif";
                 Glide.with(this)
                         .load(url)
+                        .asGif()
                         .into(ivShow);
                 //显示本地视频
 //                String filePath = "/storage/emulated/0/Pictures/example_video.mp4";
@@ -97,11 +119,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             default:
                 //从文件中加载图片
-                //这个文件可能不存在于你的设备中。然而你可以用任何文件路径，去指定一个图片路径。
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Running.jpg");
-                Glide.with(this)
-                        .load(file)
-                        .into(ivShow);
+//                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Running.jpg");
+//                Glide.with(this)
+//                        .load(file)
+//                        .into(ivShow);
         }
     }
 
@@ -111,4 +132,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static Uri resourceIdToUri(Context context, int resourceId) {
         return Uri.parse(ANDROID_RESOURCE + context.getPackageName() + FOREWARD_SLASH + resourceId);
     }
+
+    //simpletarget的使用
+    private void loadImageViewTarget(){
+        Glide.with(this) // could be an issue!
+                .load("http://i.imgur.com/DvpvklR.png")
+                .asBitmap()
+                .into(target);
+    }
+
+    private SimpleTarget target = new SimpleTarget<Bitmap>() {
+        @Override
+        public void onResourceReady(Bitmap bitmap, GlideAnimation glideAnimation) {
+
+            ivShow.setImageBitmap(bitmap);
+        }
+    };
+
+    //用于捕获异常
+    private RequestListener<String,GlideDrawable> requestListener = new RequestListener<String,GlideDrawable>() {
+        @Override
+        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+            // todo log exception
+
+            // important to return false so the error placeholder can be placed
+            return false;
+        }
+
+        @Override
+        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+            return false;
+        }
+    };
+
+    //ViewTarget使用(这个只是做一个记录，其中有些类并没有)
+//    private void loadImageViewTarget() {
+//        FutureStudioView customView = (FutureStudioView) findViewById( R.id.custom_view );
+//
+//        viewTarget = new ViewTarget<FutureStudioView, GlideDrawable>( customView ) {
+//            @Override
+//            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+//                this.view.setImage( resource.getCurrent() );
+//            }
+//        };
+//
+//        Glide.with( context.getApplicationContext() ) // safer!
+//                .load( eatFoodyImages[2] )
+//                .into( viewTarget );
+//    }
 }
