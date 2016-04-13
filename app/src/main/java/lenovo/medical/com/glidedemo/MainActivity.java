@@ -16,6 +16,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 
+import jp.wasabeef.glide.transformations.BlurTransformation;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private ImageView ivShow;
@@ -44,13 +46,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.btn1:
                 //从网络中加载文件
-                String internetUrl = "http://i.imgur.com/DvpvklR.png";
-                Glide.with(this)
-                        .load(internetUrl)
-                        .placeholder(R.drawable.a) //加载前占位
-                        .error(R.mipmap.ic_launcher) //will be displayed if the image cannot be load
-                        .crossFade() // 淡入淡出动画(禁止动画dontAnimate)
-                        .into(ivShow);
+//                String internetUrl = "http://i.imgur.com/DvpvklR.png";
+//                Glide.with(this)
+//                        .load(internetUrl)
+//                        .placeholder(R.drawable.a) //加载前占位
+//                        .error(R.mipmap.ic_launcher) //will be displayed if the image cannot be load
+//                        .crossFade() // 淡入淡出动画(禁止动画dontAnimate)
+//                        .into(ivShow);
+                //使用转换库
+                userTransformLibrary();
                 break;
             case R.id.btn2:
                 //从资源中加载图片
@@ -106,16 +110,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        .centerCrop()//CenterCrop()是一个裁剪技术，即缩放图像让它填充到 ImageView 界限内并且侧键额外的部分()
 //                        .into(ivShow);
                 //显示gif动画
-                String url = "http://i.kinja-img.com/gawker-media/image/upload/s--B7tUiM5l--/gf2r69yorbdesguga10i.gif";
-                Glide.with(this)
-                        .load(url)
-                        .asGif()
-                        .into(ivShow);
+//                String url = "http://i.kinja-img.com/gawker-media/image/upload/s--B7tUiM5l--/gf2r69yorbdesguga10i.gif";
+//                Glide.with(this)
+//                        .load(url)
+//                        .asGif()
+//                        .into(ivShow);
                 //显示本地视频
 //                String filePath = "/storage/emulated/0/Pictures/example_video.mp4";
 //                Glide.with(this)
 //                        .load( Uri.fromFile( new File( filePath ) ) )
 //                        .into(ivShow);
+                useMyAnimator();
                 break;
             default:
                 //从文件中加载图片
@@ -164,6 +169,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         }
     };
+
+    //使用自定义转换库(https://github.com/wasabeef/glide-transformations)
+    /*
+    * Crop
+    CropTransformation, CropCircleTransformation, CropSquareTransformation, RoundedCornersTransformation
+    Color
+    ColorFilterTransformation, GrayscaleTransformation
+    Blur
+    BlurTransformation
+    Mask
+    MaskTransformation
+    GPU Filter (use GPUImage)
+    Will require add dependencies for GPUImage.
+    ToonFilterTransformation, SepiaFilterTransformation, ContrastFilterTransformation
+    InvertFilterTransformation, PixelationFilterTransformation, SketchFilterTransformation
+    SwirlFilterTransformation, BrightnessFilterTransformation, KuwaharaFilterTransformation VignetteFilterTransformation
+    * */
+    private void userTransformLibrary(){
+
+        //从网络中加载文件
+        String internetUrl = "http://i.imgur.com/DvpvklR.png";
+        Glide.with(this)
+                .load(internetUrl)
+                .placeholder(R.drawable.a) //加载前占位
+                .error(R.mipmap.ic_launcher) //will be displayed if the image cannot be load
+                .crossFade() // 淡入淡出动画(禁止动画dontAnimate)
+                .bitmapTransform(new BlurTransformation(this))
+                .into(ivShow);
+    }
+
+    //使用自定义动画
+    /*
+    * <?xml version="1.0" encoding="utf-8"?>
+    <set xmlns:android="http://schemas.android.com/apk/res/android"
+        android:fillAfter="true">
+
+    <scale
+        android:duration="@android:integer/config_longAnimTime"
+        android:fromXScale="0.1"
+        android:fromYScale="0.1"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1"
+        android:toYScale="1"/>
+       </set>
+    * */
+    private void useMyAnimator(){
+
+        String internetUrl = "http://i.imgur.com/DvpvklR.png";
+        Glide.with(this)
+                .load(internetUrl)
+                .placeholder(R.drawable.a) //加载前占位
+                .error(R.mipmap.ic_launcher) //will be displayed if the image cannot be load
+                .crossFade() // 淡入淡出动画(禁止动画dontAnimate)
+                .animate(new AlphaAnimator())
+                .into(ivShow);
+
+    }
 
     //ViewTarget使用(这个只是做一个记录，其中有些类并没有)
 //    private void loadImageViewTarget() {
