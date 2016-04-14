@@ -17,6 +17,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import lenovo.medical.com.glidedemo.animator.AlphaAnimator;
+import lenovo.medical.com.glidedemo.imagesize.CustomImageSizeModel;
+import lenovo.medical.com.glidedemo.imagesize.CustomImageSizeModelFutureStudio;
+import lenovo.medical.com.glidedemo.imagesize.CustomImageSizeUrlLoader;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -190,8 +194,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //从网络中加载文件
         String internetUrl = "http://i.imgur.com/DvpvklR.png";
+        CustomImageSizeModel customImageSizeModel = new CustomImageSizeModelFutureStudio(internetUrl);
         Glide.with(this)
-                .load(internetUrl)
+                .using(new CustomImageSizeUrlLoader(this))
+                .load(customImageSizeModel)
                 .placeholder(R.drawable.a) //加载前占位
                 .error(R.mipmap.ic_launcher) //will be displayed if the image cannot be load
                 .crossFade() // 淡入淡出动画(禁止动画dontAnimate)

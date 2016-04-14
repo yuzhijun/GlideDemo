@@ -1,4 +1,4 @@
-package lenovo.medical.com.glidedemo;
+package lenovo.medical.com.glidedemo.animator;
 
 import android.animation.ObjectAnimator;
 import android.view.View;
